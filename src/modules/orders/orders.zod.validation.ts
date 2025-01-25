@@ -1,18 +1,26 @@
 import { z } from 'zod';
 
-// Zod for validating order creation
-export const validationByZodSchema = z.object({
-  email: z
-    .string()
-    .email({ message: 'Invalid email address' })
-    .nonempty({ message: 'Email is required' }),
-  product: z.string().nonempty({ message: 'Product ID is required' }),
-  quantity: z
-    .number()
-    .min(1, { message: 'Quantity must be at least 1' })
-    .nonnegative({ message: 'Quantity cannot be negative' }),
-  totalPrice: z
-    .number()
-    .min(0, { message: 'Total price must be a positive number' })
-    .nonnegative({ message: 'Total price cannot be negative' }),
+// Define the Order schema
+const orderSchema = z.object({
+  body: z.object({
+    userId: z.string().min(1, 'User ID is required'),
+    products: z
+      .array(
+        z.object({
+          productId: z.string().min(1, 'Product ID is required'),
+          quantity: z
+            .number()
+            .int()
+            .positive('Quantity must be a positive integer'),
+          price: z.number().nonnegative('Price must be non-negative'),
+        }),
+      )
+      .min(1, 'At least one product is required'),
+    totalPrice: z.number().nonnegative('Total price must be non-negative'),
+    status: z.enum(['pending', 'completed', 'canceled']).default('pending'),
+  }),
 });
+
+export const orderZodSchema = {
+  orderSchema,
+};
