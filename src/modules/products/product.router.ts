@@ -1,12 +1,12 @@
 import express from 'express';
 import { BikeControllers } from './product.controller';
-const router = express.Router();
+const productRouter = express.Router();
 
 // all the product related routes
-router.post('/products', BikeControllers.createBikesInfo);
-router.get('/products', BikeControllers.getAllBikesByQuery);
-router.get('/products/:productId', BikeControllers.getBikeById);
-router.put('/products/:productId', BikeControllers.docUpdatedById);
-router.delete('/products/:productId', BikeControllers.deleteBikeFromDB);
+productRouter.post('/create-product', BikeControllers.createBikesInfo);
+productRouter.get('/', BikeControllers.getAllBikesByQuery);
+productRouter.get('/:productId', BikeControllers.getBikeById);
+productRouter.put('/:productId', BikeControllers.docUpdatedById);
+productRouter.delete('/:productId', BikeControllers.deleteBikeFromDB);
 
-export default router;
+export default productRouter;
