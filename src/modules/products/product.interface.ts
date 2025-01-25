@@ -1,14 +1,8 @@
-type Category = 'Mountain' | 'Road' | 'Hybrid' | 'Electric';
-
-// bike interface
-export interface TBike {
+// Define the Product interface
+export interface TProduct {
   name: string;
   brand: string;
   price: number;
-  category: Category;
-  description: string;
-  quantity: number;
-  inStock: boolean;
-  createdAt?: Date;
-  updatedAt?: Date;
+  model: string;
+  stock: number;
 }

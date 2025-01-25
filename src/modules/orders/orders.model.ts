@@ -1,30 +1,37 @@
-import mongoose from 'mongoose';
+import mongoose, { Model, Schema } from 'mongoose';
 import { TOrder } from './orders.interface';
-const { Schema } = mongoose;
 
-const orderSchema = new Schema<TOrder>(
+const orderSchema: Schema<TOrder> = new Schema(
   {
-    email: {
-      type: String,
-      required: [true, 'This field is required'],
-    },
-    product: {
-      type: String,
-      required: [true, 'This field is required'],
-    },
-    quantity: {
-      type: Number,
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
       required: true,
-      min: 1,
     },
-    totalPrice: {
-      type: Number,
-      min: [0, 'Number must be positive number'],
+    products: [
+      {
+        productId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'Product',
+          required: true,
+        },
+        quantity: { type: Number, required: true },
+        price: { type: Number, required: true },
+      },
+    ],
+    totalPrice: { type: Number, required: true },
+    status: {
+      type: String,
+      enum: ['pending', 'completed', 'canceled'],
+      default: 'pending',
     },
   },
-  { timestamps: true, versionKey: false },
+  {
+    timestamps: true,
+    versionKey: false,
+  },
 );
 
-const Order = mongoose.model<TOrder>('orders', orderSchema);
-
+// Create and export the Order model
+const Order: Model<TOrder> = mongoose.model<TOrder>('Order', orderSchema);
 export default Order;
