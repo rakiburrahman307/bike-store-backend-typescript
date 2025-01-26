@@ -1,36 +1,47 @@
-import { BikeService } from '../products/product.service';
+import status from 'http-status';
+import AppError from '../../errors/AppError';
+import Product from '../products/product.model';
 import { TOrder } from './orders.interface';
 import Order from './orders.model';
 
 const createOrder = async (orderData: TOrder) => {
-  const order = await Order.create(orderData);
-  return order;
-};
-const validateAndUpdateBikeInfo = async (
-  productId: string,
-  quantity: number,
-) => {
-  // Find the bike by ID
-  const bike = await BikeService.findBikeById(productId);
-  // check the bike found or not found
-  if (!bike) {
-    throw new Error('Bike not found');
+  const session = await Product.startSession();
+  session.startTransaction();
+
+  try {
+    // Iterate over the products in the order
+    for (const item of orderData.products) {
+      const product = await Product.findById(item.productId).session(session);
+
+      if (!product) {
+        throw new AppError(status.NOT_FOUND, `Product not found`);
+      }
+
+      // Check stock availability
+      if (product?.stock < item?.quantity) {
+        throw new AppError(
+          status.NOT_FOUND,
+          `Product ${product?.name} is out of stock`,
+        );
+      }
+
+      // Decrease product stock
+      product.stock -= item.quantity;
+      await product.save({ session });
+    }
+
+    // Create the order after stock validation and update
+    const order = await Order.create([orderData], { session });
+
+    await session.commitTransaction();
+    session.endSession();
+
+    return order;
+  } catch (error: any) {
+    await session.abortTransaction();
+    session.endSession();
+    throw new AppError(status.INTERNAL_SERVER_ERROR, error);
   }
-  // Check if sufficient stock is available
-  if (bike?.quantity < quantity) {
-    throw new Error('Stock not available');
-  }
-
-  // Reduce the bike quantity
-  const newQuantity = bike.quantity - quantity;
-
-  // Update the bike's quantity and inStock status
-  await BikeService.updateDoc(productId, {
-    quantity: newQuantity,
-    inStock: newQuantity > 0,
-  });
-
-  return bike;
 };
 
 // calculate total revenue
@@ -51,6 +62,5 @@ const calculateTotalRevenue = async () => {
 };
 export const orderService = {
   createOrder,
-  validateAndUpdateBikeInfo,
   calculateTotalRevenue,
 };

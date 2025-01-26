@@ -1,36 +1,19 @@
 import { NextFunction, Request, Response } from 'express';
-import { validationByZodSchema } from './orders.zod.validation';
-import { TOrder } from './orders.interface';
 import { orderService } from './orders.service';
+import catchAsync from '../../utils/catchAsync';
+import sendResponse from '../../utils/sendResponse';
+import status from 'http-status';
 
-const createProductOrder = async (
-  req: Request<TOrder>,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
-  try {
-    const orderData = req.body;
-    // validation by zod { product, quantity }
-    const zodValidation = validationByZodSchema.parse(orderData);
+const createProductOrder = catchAsync(async (req, res) => {
+  const result = await orderService.createOrder(req?.body);
 
-    await orderService.validateAndUpdateBikeInfo(
-      zodValidation.product,
-      zodValidation.quantity,
-    );
-
-    // Create the order
-    const newOrder = await orderService.createOrder(zodValidation);
-
-    // Respond with success
-    res.status(201).json({
-      message: 'Order created successfully',
-      success: true,
-      data: newOrder,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
+  sendResponse(res, {
+    statusCode: status.CREATED,
+    message: 'Order created successfully',
+    success: true,
+    data: result,
+  });
+});
 
 // get total revenue from all orders
 const getTotalRevenue = async (
