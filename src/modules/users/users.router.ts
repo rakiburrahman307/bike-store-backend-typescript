@@ -2,15 +2,18 @@ import express from 'express';
 import { userControllers } from './users.controller';
 import validateZodSchema from '../../middleware/validateZodSchema';
 import { userZodSchema } from './users.zod.validation';
-const orderRouter = express.Router();
+import auth from '../../middleware/auth';
+import { USER_ROLE } from './user.constant';
+const userRouter = express.Router();
 
 // all order related routes
-orderRouter.get('/', userControllers.getAllUsers);
-orderRouter.delete('/:id', userControllers.deleteUser);
-orderRouter.patch(
+userRouter.get('/', auth(USER_ROLE.admin), userControllers.getAllUsers);
+userRouter.delete('/:id',auth(USER_ROLE.admin), userControllers.deleteUser);
+userRouter.patch(
   '/:id',
+  auth(USER_ROLE.admin),
   validateZodSchema(userZodSchema.updateUserSchema),
   userControllers.updateUserData,
 );
 
-export default orderRouter;
+export default userRouter;

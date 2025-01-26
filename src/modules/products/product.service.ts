@@ -42,7 +42,7 @@ const findBikeById = async (id: string) => {
 const updateDoc = async (id: string, updatedData: Partial<TProduct>) => {
   const result = await Product.findByIdAndUpdate(
     id,
-    { $set: updatedData },
+    { ...updatedData },
     { new: true, runValidators: true },
   );
   return result;
