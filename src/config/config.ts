@@ -15,6 +15,12 @@ const config = {
   SALT_ROUND_BCRYPT: process.env.SALT_ROUND_BCRYPT,
   JWT_SECRET_KYE: process.env.JWT_SECRET_KYE,
   JWT_ACCESS_EXPIRES_IN: process.env.JWT_ACCESS_EXPIRES_IN,
+  // ShurjoPay Configurations
+  SP_ENDPOINT: process.env.SP_ENDPOINT,
+  SP_USERNAME: process.env.SP_USERNAME,
+  SP_PASSWORD: process.env.SP_PASSWORD,
+  SP_PREFIX: process.env.SP_PREFIX,
+  SP_RETURN_URL: process.env.SP_RETURN_URL,
 };
 
 export default config;

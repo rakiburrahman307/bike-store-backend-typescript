@@ -19,4 +19,7 @@ orderRouter.get(
   orderControllers.getTotalRevenue,
 );
 
+// orderRouter.post('/payments/initiate', orderControllers.createPayment);
+// orderRouter.get('/shurjopay-response', orderControllers.verifyPayment);
+
 export default orderRouter;

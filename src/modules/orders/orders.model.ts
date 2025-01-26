@@ -1,6 +1,20 @@
 import mongoose, { Model, Schema } from 'mongoose';
 import { TOrder } from './orders.interface';
-
+const paymentSchema = new mongoose.Schema({
+  checkout_url: { type: String, default: null }, 
+  amount: { type: Number, default: 0 }, 
+  currency: { type: String, default: null }, 
+  sp_order_id: { type: String, default: null },
+  customer_order_id: { type: String, default: null },
+  customer_name: { type: String, default: null }, 
+  customer_address: { type: String, default: null }, 
+  customer_city: { type: String, default: null }, 
+  customer_phone: { type: String, default: null }, 
+  customer_email: { type: String, default: null }, 
+  client_ip: { type: String, default: null }, 
+  intent: { type: String, default: null }, 
+  transactionStatus: { type: String, default: null }, 
+});
 const orderSchema: Schema<TOrder> = new Schema(
   {
     userId: {
@@ -20,6 +34,7 @@ const orderSchema: Schema<TOrder> = new Schema(
       },
     ],
     totalPrice: { type: Number, required: true },
+    payment: paymentSchema, 
     status: {
       type: String,
       enum: ['pending', 'completed', 'canceled'],

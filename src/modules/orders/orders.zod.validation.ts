@@ -17,7 +17,6 @@ const orderSchema = z.object({
       )
       .min(1, 'At least one product is required'),
     totalPrice: z.number().nonnegative('Total price must be non-negative'),
-    status: z.enum(['pending', 'completed', 'canceled']).default('pending'),
   }),
 });
 

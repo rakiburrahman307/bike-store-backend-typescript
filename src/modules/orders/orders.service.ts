@@ -3,6 +3,8 @@ import AppError from '../../errors/AppError';
 import Product from '../products/product.model';
 import { TOrder } from './orders.interface';
 import Order from './orders.model';
+import { surjoPaymentCreate } from '../../utils/surjopay';
+import User from '../users/users.model';
 
 const createOrder = async (orderData: TOrder) => {
   const session = await Product.startSession();
@@ -18,10 +20,10 @@ const createOrder = async (orderData: TOrder) => {
       }
 
       // Check stock availability
-      if (product?.stock < item?.quantity) {
+      if (product.stock < item.quantity) {
         throw new AppError(
-          status.NOT_FOUND,
-          `Product ${product?.name} is out of stock`,
+          status.BAD_REQUEST,
+          `Product "${product.name}" is out of stock`,
         );
       }
 
@@ -30,17 +32,51 @@ const createOrder = async (orderData: TOrder) => {
       await product.save({ session });
     }
 
-    // Create the order after stock validation and update
-    const order = await Order.create([orderData], { session });
+    // Fetch user data for payment details
+    const user = await User.findById(orderData.userId).session(session);
+    if (!user) {
+      throw new AppError(status.NOT_FOUND, `User not found`);
+    }
 
+    // Create payment object
+    const paymentObjet = {
+      amount: orderData.totalPrice as number,
+      order_id: user?._id as string,
+      customer_name: user?.name as string,
+      email: user?.email as string,
+      customer_address: 'dhaka',
+      customer_phone: '0174545455',
+      customer_city: 'dhaka',
+      client_ip: '127.0.0.1',
+      currency: 'BDT',
+    };
+
+    // Call payment service
+    const payment = await surjoPaymentCreate(paymentObjet);
+
+    // Include payment details in the final order
+    const finalOrderData = {
+      ...orderData,
+      payment,
+    };
+    // Save the order
+    const order = await Order.create([finalOrderData], { session });
+
+    // Commit transaction
     await session.commitTransaction();
     session.endSession();
 
     return order;
   } catch (error: any) {
+    // Abort transaction on error
     await session.abortTransaction();
     session.endSession();
-    throw new AppError(status.INTERNAL_SERVER_ERROR, error);
+
+    // Throw error for higher-level handling
+    throw new AppError(
+      status.INTERNAL_SERVER_ERROR,
+      error.message || 'Failed to create order',
+    );
   }
 };
 
