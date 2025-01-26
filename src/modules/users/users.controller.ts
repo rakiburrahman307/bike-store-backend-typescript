@@ -1,57 +1,40 @@
-import { NextFunction, Request, Response } from 'express';
-import { validationByZodSchema } from './users.zod.validation';
-import { TOrder } from './users.interface';
-import { orderService } from './users.service';
+import status from 'http-status';
+import catchAsync from '../../utils/catchAsync';
+import sendResponse from '../../utils/sendResponse';
+import { userService } from './users.service';
 
-const createProductOrder = async (
-  req: Request<TOrder>,
-  res: Response,
-  next: NextFunction,
-): Promise<void> => {
-  try {
-    const orderData = req.body;
-    // validation by zod { product, quantity }
-    const zodValidation = validationByZodSchema.parse(orderData);
+const getAllUsers = catchAsync(async (req, res) => {
+  const result = await userService.getUsers();
+  sendResponse(res, {
+    statusCode: status.OK,
+    message: 'Users retrieved successfully',
+    success: true,
+    data: result,
+  });
+});
+const updateUserData = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const result = await userService.updateUser(id, req?.body);
+  sendResponse(res, {
+    statusCode: status.OK,
+    message: 'User update successfully',
+    success: true,
+    data: result,
+  });
+});
+const deleteUser = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  await userService.deleteUser(id);
+  sendResponse(res, {
+    statusCode: status.OK,
+    message: 'User deleted successfully',
+    success: true,
+    data: {},
+  });
+});
 
-    await orderService.validateAndUpdateBikeInfo(
-      zodValidation.product,
-      zodValidation.quantity,
-    );
-
-    // Create the order
-    const newOrder = await orderService.createOrder(zodValidation);
-
-    // Respond with success
-    res.status(201).json({
-      message: 'Order created successfully',
-      success: true,
-      data: newOrder,
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
-// get total revenue from all orders
-const getTotalRevenue = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  try {
-    const totalRevenue = await orderService.calculateTotalRevenue();
-    res.status(200).json({
-      message: 'Revenue calculated successfully',
-      success: true,
-      data: {
-        totalRevenue,
-      },
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-export const orderControllers = {
-  createProductOrder,
-  getTotalRevenue,
+export const userControllers = {
+  getAllUsers,
+  updateUserData,
+  deleteUser,
 };

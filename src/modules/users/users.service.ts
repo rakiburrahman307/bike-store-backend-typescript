@@ -1,56 +1,33 @@
-import { BikeService } from '../products/product.service';
-import { TOrder } from './users.interface';
-import Order from './users.model';
+import { TUser } from './users.interface';
+import User from './users.model';
 
-const createOrder = async (orderData: TOrder) => {
-  const order = await Order.create(orderData);
-  return order;
+const getUsers = async () => {
+  // Fetch all users
+  const users = await User.find();
+  return users;
 };
-const validateAndUpdateBikeInfo = async (
-  productId: string,
-  quantity: number,
-) => {
-  // Find the bike by ID
-  const bike = await BikeService.findBikeById(productId);
-  // check the bike found or not found
-  if (!bike) {
-    throw new Error('Bike not found');
-  }
-  // Check if sufficient stock is available
-  if (bike?.quantity < quantity) {
-    throw new Error('Stock not available');
-  }
-
-  // Reduce the bike quantity
-  const newQuantity = bike.quantity - quantity;
-
-  // Update the bike's quantity and inStock status
-  await BikeService.updateDoc(productId, {
-    quantity: newQuantity,
-    inStock: newQuantity > 0,
-  });
-
-  return bike;
-};
-
-// calculate total revenue
-const calculateTotalRevenue = async () => {
-  const result = await Order.aggregate([
+const updateUser = async (id: string, payload: Partial<TUser>) => {
+  // Update users
+  const users = await User.findByIdAndUpdate(
+    id,
     {
-      $group: {
-        _id: null,
-        totalRevenue: {
-          $sum: {
-            $multiply: ['$quantity', '$totalPrice'],
-          },
-        },
-      },
+      ...payload,
     },
-  ]);
-  return result[0]?.totalRevenue || 0;
+    {
+      new: true,
+      runValidators: true,
+    },
+  );
+  return users;
 };
-export const orderService = {
-  createOrder,
-  validateAndUpdateBikeInfo,
-  calculateTotalRevenue,
+const deleteUser = async (id: string) => {
+  // delete users
+  const result = await User.findByIdAndDelete(id);
+  return result;
+};
+
+export const userService = {
+  getUsers,
+  updateUser,
+  deleteUser,
 };
