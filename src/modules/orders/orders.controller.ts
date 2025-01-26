@@ -1,4 +1,3 @@
-import { NextFunction, Request, Response } from 'express';
 import { orderService } from './orders.service';
 import catchAsync from '../../utils/catchAsync';
 import sendResponse from '../../utils/sendResponse';
@@ -16,24 +15,18 @@ const createProductOrder = catchAsync(async (req, res) => {
 });
 
 // get total revenue from all orders
-const getTotalRevenue = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) => {
-  try {
-    const totalRevenue = await orderService.calculateTotalRevenue();
-    res.status(200).json({
-      message: 'Revenue calculated successfully',
-      success: true,
-      data: {
-        totalRevenue,
-      },
-    });
-  } catch (error) {
-    next(error);
-  }
-};
+const getTotalRevenue = catchAsync(async (req, res) => {
+  const totalRevenue = await orderService.calculateTotalRevenue();
+  sendResponse(res, {
+    statusCode: status.CREATED,
+    message: 'Order created successfully',
+    success: true,
+    data: {
+      totalRevenue,
+    },
+  });
+});
+
 export const orderControllers = {
   createProductOrder,
   getTotalRevenue,

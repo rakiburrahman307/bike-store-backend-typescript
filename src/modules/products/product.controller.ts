@@ -49,6 +49,8 @@ const docUpdatedById = catchAsync(async (req, res) => {
     data: result,
   });
 });
+
+// deleted doc
 const deleteBikeFromDB = catchAsync(async (req, res) => {
   const { productId } = req.params;
   const result = await BikeService.deleteDoc(productId);

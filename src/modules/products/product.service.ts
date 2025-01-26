@@ -10,7 +10,7 @@ const bikeInsertToDb = async (payload: TProduct) => {
     brand,
     model,
     price,
-    stock
+    stock,
   });
   return result;
 };
