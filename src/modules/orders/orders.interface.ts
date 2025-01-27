@@ -19,6 +19,7 @@ export interface TOrder {
   userId: mongoose.Types.ObjectId;
   products: {
     productId: mongoose.Types.ObjectId;
+    image: string;
     quantity: number;
     price: number;
   }[];

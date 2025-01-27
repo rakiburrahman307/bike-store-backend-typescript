@@ -8,6 +8,7 @@ const orderSchema = z.object({
       .array(
         z.object({
           productId: z.string().min(1, 'Product ID is required'),
+          image: z.string().optional(),
           quantity: z
             .number()
             .int()

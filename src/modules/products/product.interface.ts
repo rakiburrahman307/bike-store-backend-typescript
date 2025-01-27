@@ -4,6 +4,7 @@ import mongoose from "mongoose";
 export interface TProduct {
   userId: mongoose.Types.ObjectId
   name: string;
+  image?: string;
   brand: string;
   price: number;
   model: string;

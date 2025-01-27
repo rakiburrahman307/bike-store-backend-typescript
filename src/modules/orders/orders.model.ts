@@ -29,6 +29,7 @@ const orderSchema: Schema<TOrder> = new Schema(
           ref: 'Product',
           required: true,
         },
+        image: { type: String, default: "" },
         quantity: { type: Number, required: true },
         price: { type: Number, required: true },
       },
