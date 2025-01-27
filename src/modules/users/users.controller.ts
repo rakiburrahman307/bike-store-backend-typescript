@@ -4,12 +4,13 @@ import sendResponse from '../../utils/sendResponse';
 import { userService } from './users.service';
 
 const getAllUsers = catchAsync(async (req, res) => {
-  const result = await userService.getUsers();
+  const result = await userService.getUsers(req?.query);
   sendResponse(res, {
     statusCode: status.OK,
     message: 'Users retrieved successfully',
     success: true,
-    data: result,
+    data: result.users,
+    meta: result.meta
   });
 });
 const updateUserData = catchAsync(async (req, res) => {

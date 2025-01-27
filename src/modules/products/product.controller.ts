@@ -15,8 +15,7 @@ const createBikesInfo = catchAsync(async (req, res) => {
 });
 // get bikes by query: name, brand, category
 const getAllBikesByQuery = catchAsync(async (req, res) => {
-  const { searchTerm } = req.query;
-  const result = await BikeService.getAllBikes(searchTerm as string);
+  const result = await BikeService.getAllBikes(req.query);
   sendResponse(res, {
     statusCode: status.CREATED,
     success: true,

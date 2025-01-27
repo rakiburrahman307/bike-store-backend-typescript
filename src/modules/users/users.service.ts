@@ -1,10 +1,21 @@
+import QueryBuilder from '../../builder/QueryBuilder';
 import { TUser } from './users.interface';
 import User from './users.model';
 
-const getUsers = async () => {
-  // Fetch all users
-  const users = await User.find();
-  return users;
+const getUsers = async (query: Record<string, unknown>) => {
+  const queryBuilder = new QueryBuilder(User.find(), query);
+
+  const users = await queryBuilder
+    .search(['name', 'email', 'role'])
+    .filter()
+    .sort()
+    .paginate()
+    .fields()
+    .modelQuery.exec();
+
+  const meta = await queryBuilder.countTotal();
+
+  return { users, meta };
 };
 const updateUser = async (id: string, payload: Partial<TUser>) => {
   // Update users

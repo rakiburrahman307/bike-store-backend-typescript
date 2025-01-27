@@ -15,7 +15,7 @@ export interface IPayment {
   intent?: string;
   transactionStatus?: string;
 }
-export interface TOrder extends Document {
+export interface TOrder {
   userId: mongoose.Types.ObjectId;
   products: {
     productId: mongoose.Types.ObjectId;

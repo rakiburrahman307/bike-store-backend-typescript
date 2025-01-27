@@ -7,6 +7,11 @@ import auth from '../../middleware/auth';
 const orderRouter = express.Router();
 
 // all order related routes
+orderRouter.get(
+  '/',
+  auth(USER_ROLE.admin, USER_ROLE.customer),
+  orderControllers.getOrders,
+);
 orderRouter.post(
   '/create-order',
   auth(USER_ROLE.admin, USER_ROLE.customer),
@@ -19,7 +24,6 @@ orderRouter.get(
   orderControllers.getTotalRevenue,
 );
 
-// orderRouter.post('/payments/initiate', orderControllers.createPayment);
-// orderRouter.get('/shurjopay-response', orderControllers.verifyPayment);
+orderRouter.get('/shurjopay-response', orderControllers.verifyPayment);
 
 export default orderRouter;

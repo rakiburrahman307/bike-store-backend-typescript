@@ -4,6 +4,11 @@ import { TProduct } from './product.interface';
 // Define the Product schema
 const productSchema: Schema<TProduct> = new Schema(
   {
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      required: true,
+    },
     name: { type: String, required: true },
     brand: { type: String, required: true },
     price: { type: Number, required: true },
