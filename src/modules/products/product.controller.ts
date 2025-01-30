@@ -17,10 +17,11 @@ const createBikesInfo = catchAsync(async (req, res) => {
 const getAllBikesByQuery = catchAsync(async (req, res) => {
   const result = await BikeService.getAllBikes(req.query);
   sendResponse(res, {
-    statusCode: status.CREATED,
+    statusCode: status.OK,
     success: true,
     message: 'Products retrieved successfully',
-    data: result,
+    data: result.data,
+    meta: result.meta,
   });
 });
 // get a specific bike by using id
